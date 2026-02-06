@@ -9,45 +9,50 @@
 </head>
 <body>
 
-    <div id="splash-screen">
-        <video id="intro-video" muted playsinline autoplay>
-            <source src="assets/intro.mp4" type="video/mp4">
-        </video>
+    <div id="intro-screen">
+        <div class="logo-wrapper">
+            <img src="assets/logo.png" alt="ELEVATE" class="intro-logo">
+            <div class="light-beam"></div>
+        </div>
     </div>
 
-    <main id="onboarding" class="hidden">
+    <main id="onboarding">
         
         <section class="slide active" id="slide-manifesto">
-            <div class="content-center">
+            <div class="center-content">
                 <h1 class="fade-in">UPGRADE<br>YOUR REALITY</h1>
-                <p class="fade-in delay-1">Elevate ist kein Tracker.<br>Es ist ein Standard.</p>
-                <div class="bottom-action fade-in delay-2" onclick="nextSlide(1)">
-                    <span class="blink">TAP TO INITIALIZE</span>
-                </div>
+                <p class="fade-in delay-1">Elevate ist kein Tool.<br>Es ist ein Standard.</p>
+            </div>
+            <div class="bottom-area fade-in delay-2" onclick="nextSlide(0)">
+                <span class="blink-text">TAP TO INITIALIZE</span>
             </div>
         </section>
 
         <section class="slide" id="slide-name">
-            <div class="input-wrapper">
+            <div class="center-content">
                 <label>IDENTITY SUBJECT</label>
-                <input type="text" id="input-name" placeholder="Name" autocomplete="off">
+                <input type="text" id="input-name" placeholder="Dein Name" autocomplete="off">
             </div>
-            <button class="next-btn" onclick="saveNameAndNext()">Enter</button>
+            <button class="next-btn" onclick="saveNameAndNext()">
+                <i data-lucide="arrow-right"></i>
+            </button>
         </section>
 
         <section class="slide" id="slide-age">
-            <div class="input-wrapper">
+            <div class="center-content">
                 <label>ORIGIN DATE</label>
                 <input type="date" id="input-date">
-                <p id="life-stats" class="sub-stat">Waiting for input...</p>
+                <p id="life-stats" class="sub-stat"></p>
             </div>
-            <button class="next-btn" onclick="saveDateAndNext()">Confirm</button>
+            <button class="next-btn" onclick="saveDateAndNext()">
+                <i data-lucide="arrow-right"></i>
+            </button>
         </section>
 
         <section class="slide" id="slide-focus">
-            <div class="top-text">
+            <div class="top-area">
                 <label>SELECT OBJECTIVES</label>
-                <p>Choose your battlegrounds.</p>
+                <p style="margin-top:5px; color:#666;">Choose your battlegrounds.</p>
             </div>
             
             <div class="grid-select">
@@ -68,23 +73,23 @@
                     <span>RECOVERY</span>
                 </div>
             </div>
-            <button class="next-btn" onclick="nextSlide(4)">Next</button>
+            <button class="next-btn" onclick="nextSlide(3)">
+                <i data-lucide="arrow-right"></i>
+            </button>
         </section>
 
         <section class="slide" id="slide-commit">
-            <div class="content-center">
-                <h2>SYSTEM READY</h2>
-                <div class="summary-list" id="summary-data">
-                    </div>
+            <div class="center-content">
+                <h2 style="font-weight: 300; letter-spacing: 2px;">SYSTEM READY</h2>
+                <p id="final-name" style="color: white; margin-top: 10px;"></p>
             </div>
 
             <div class="commit-zone">
-                <div class="hold-circle-bg"></div>
                 <svg class="progress-ring" width="120" height="120">
-                    <circle class="progress-ring__circle" stroke="white" stroke-width="4" fill="transparent" r="52" cx="60" cy="60"/>
+                    <circle class="progress-ring__circle" stroke="white" stroke-width="3" fill="transparent" r="52" cx="60" cy="60"/>
                 </svg>
                 <button id="commit-btn" class="hold-btn">
-                    <i data-lucide="fingerprint"></i>
+                    <i data-lucide="fingerprint" style="width: 40px; height: 40px;"></i>
                 </button>
                 <p class="hold-text">HOLD TO COMMIT</p>
             </div>
