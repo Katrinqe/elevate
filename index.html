@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ELEVATE</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div id="splash-screen">
+        <video id="intro-video" muted playsinline autoplay>
+            <source src="assets/intro.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <main id="onboarding" class="hidden">
+        
+        <section class="slide active" id="slide-manifesto">
+            <div class="content-center">
+                <h1 class="fade-in">UPGRADE<br>YOUR REALITY</h1>
+                <p class="fade-in delay-1">Elevate ist kein Tracker.<br>Es ist ein Standard.</p>
+                <div class="bottom-action fade-in delay-2" onclick="nextSlide(1)">
+                    <span class="blink">TAP TO INITIALIZE</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="slide" id="slide-name">
+            <div class="input-wrapper">
+                <label>IDENTITY SUBJECT</label>
+                <input type="text" id="input-name" placeholder="Name" autocomplete="off">
+            </div>
+            <button class="next-btn" onclick="saveNameAndNext()">Enter</button>
+        </section>
+
+        <section class="slide" id="slide-age">
+            <div class="input-wrapper">
+                <label>ORIGIN DATE</label>
+                <input type="date" id="input-date">
+                <p id="life-stats" class="sub-stat">Waiting for input...</p>
+            </div>
+            <button class="next-btn" onclick="saveDateAndNext()">Confirm</button>
+        </section>
+
+        <section class="slide" id="slide-focus">
+            <div class="top-text">
+                <label>SELECT OBJECTIVES</label>
+                <p>Choose your battlegrounds.</p>
+            </div>
+            
+            <div class="grid-select">
+                <div class="select-card" onclick="toggleSelect(this, 'physique')">
+                    <i data-lucide="dumbbell"></i>
+                    <span>PHYSIQUE</span>
+                </div>
+                <div class="select-card" onclick="toggleSelect(this, 'cognition')">
+                    <i data-lucide="brain"></i>
+                    <span>COGNITION</span>
+                </div>
+                <div class="select-card" onclick="toggleSelect(this, 'finance')">
+                    <i data-lucide="wallet"></i>
+                    <span>FINANCE</span>
+                </div>
+                <div class="select-card" onclick="toggleSelect(this, 'recovery')">
+                    <i data-lucide="moon"></i>
+                    <span>RECOVERY</span>
+                </div>
+            </div>
+            <button class="next-btn" onclick="nextSlide(4)">Next</button>
+        </section>
+
+        <section class="slide" id="slide-commit">
+            <div class="content-center">
+                <h2>SYSTEM READY</h2>
+                <div class="summary-list" id="summary-data">
+                    </div>
+            </div>
+
+            <div class="commit-zone">
+                <div class="hold-circle-bg"></div>
+                <svg class="progress-ring" width="120" height="120">
+                    <circle class="progress-ring__circle" stroke="white" stroke-width="4" fill="transparent" r="52" cx="60" cy="60"/>
+                </svg>
+                <button id="commit-btn" class="hold-btn">
+                    <i data-lucide="fingerprint"></i>
+                </button>
+                <p class="hold-text">HOLD TO COMMIT</p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
