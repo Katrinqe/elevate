@@ -1,85 +1,76 @@
 lucide.createIcons();
 
-// --- 1. VIDEO HANDLING ---
-const video = document.getElementById('intro-video');
-const splash = document.getElementById('splash-screen');
-const main = document.getElementById('onboarding');
+// --- START LOGIC ---
+// Intro verschwindet automatisch per CSS nach 3.5s
+// aber wir setzen einen Timer, um es komplett aus dem DOM zu nehmen
+setTimeout(() => {
+    document.getElementById('intro-screen').style.display = 'none';
+}, 3600);
 
-video.onended = function() {
-    startOnboarding();
-};
-
-// Fallback, falls Video nicht lädt oder User klickt
-splash.addEventListener('click', () => {
-    video.pause();
-    startOnboarding();
-});
-
-function startOnboarding() {
-    splash.style.opacity = '0';
-    setTimeout(() => {
-        splash.style.display = 'none';
-        main.classList.remove('hidden');
-    }, 500); // Warte auf Fade-Out
-}
-
-// --- 2. DATA STORAGE ---
 let userData = {
     name: '',
     birthdate: '',
     focus: []
 };
 
-// --- 3. SLIDE NAVIGATION ---
+// --- SLIDE NAVIGATION (FIXED) ---
 const slides = document.querySelectorAll('.slide');
 
 function nextSlide(currentIndex) {
-    // Aktuellen Slide ausblenden
-    slides[currentIndex].style.opacity = '0';
-    slides[currentIndex].classList.remove('active');
+    const currentSlide = slides[currentIndex];
+    const nextSlide = slides[currentIndex + 1];
 
-    // Nächsten Slide einblenden (mit kurzer Verzögerung für Smoothness)
+    if (!nextSlide) return;
+
+    // 1. Alte Slide ausblenden
+    currentSlide.style.opacity = '0';
+    
+    // 2. Warten (damit sie weg ist), dann Umschalten
     setTimeout(() => {
-        const nextIndex = currentIndex + 1;
-        if (slides[nextIndex]) {
-            slides[nextIndex].classList.add('active');
-            slides[nextIndex].style.opacity = '1';
-        }
-    }, 400);
+        currentSlide.classList.remove('active'); // Versteckt sie via display: none
+        
+        // 3. Neue Slide vorbereiten (unsichtbar aber da)
+        nextSlide.classList.add('active');
+        
+        // Kurzer Delay damit der Browser das Rendern checkt
+        setTimeout(() => {
+            nextSlide.style.opacity = '1'; // Einblenden
+        }, 50);
+
+    }, 600); // Muss zur CSS Transition passen (0.6s)
 }
 
-// Slide 2: Name speichern
 function saveNameAndNext() {
     const input = document.getElementById('input-name');
-    if(input.value.trim() === '') return; // Validierung
-    
+    if(input.value.trim() === '') {
+        input.style.borderBottomColor = 'red'; // Fehler Feedback
+        return;
+    }
     userData.name = input.value;
-    console.log("Name saved:", userData.name);
-    nextSlide(1); // Index von Slide Name ist 1
+    document.getElementById('final-name').textContent = "Identity: " + userData.name;
+    nextSlide(1); // Index 1 = Name Slide
 }
 
-// Slide 3: Datum & Calculation
 function saveDateAndNext() {
     const input = document.getElementById('input-date');
     if(!input.value) return;
 
     userData.birthdate = input.value;
     
-    // Kleines Extra: Berechnung
+    // Live Berechnung anzeigen
     const birth = new Date(input.value);
     const now = new Date();
-    const diff = now - birth;
-    const ageDate = new Date(diff);
-    const years = Math.abs(ageDate.getUTCFullYear() - 1970);
+    const age = Math.floor((now - birth) / (365.25 * 24 * 60 * 60 * 1000));
     
-    document.getElementById('life-stats').innerText = `${years} Years Active`;
-    
-    setTimeout(() => nextSlide(2), 500);
+    document.getElementById('life-stats').innerText = `${age} YEARS LOGGED`;
+    document.getElementById('life-stats').style.opacity = 1;
+
+    setTimeout(() => nextSlide(2), 800);
 }
 
-// Slide 4: Toggle Selection
 function toggleSelect(el, area) {
     el.classList.toggle('selected');
+    // Logik für Array add/remove
     if (userData.focus.includes(area)) {
         userData.focus = userData.focus.filter(x => x !== area);
     } else {
@@ -87,7 +78,7 @@ function toggleSelect(el, area) {
     }
 }
 
-// --- 4. HOLD TO COMMIT LOGIC ---
+// --- HOLD BUTTON LOGIC ---
 const holdBtn = document.getElementById('commit-btn');
 const circle = document.querySelector('.progress-ring__circle');
 const radius = circle.r.baseVal.value;
@@ -98,59 +89,54 @@ circle.style.strokeDashoffset = circumference;
 
 let holdTimer;
 let progress = 0;
-const holdDuration = 2000; // 2 Sekunden halten
-const step = 20; // Update Intervall in ms
-
-function setProgress(percent) {
-    const offset = circumference - (percent / 100) * circumference;
-    circle.style.strokeDashoffset = offset;
-}
 
 function startHold(e) {
-    e.preventDefault(); // Verhindert Scrollen/Kontextmenü am Handy
+    e.preventDefault();
     holdBtn.style.transform = "scale(0.9)";
+    holdBtn.style.background = "#222";
     
     holdTimer = setInterval(() => {
-        progress += (step / holdDuration) * 100;
-        setProgress(progress);
+        progress += 2; // Geschwindigkeit
+        const offset = circumference - (progress / 100) * circumference;
+        circle.style.strokeDashoffset = offset;
 
-        // Handy vibrieren lassen (Haptic Feedback)
-        if (navigator.vibrate) navigator.vibrate(20);
+        if (navigator.vibrate) navigator.vibrate(10); // Haptic
 
         if (progress >= 100) {
             completeCommitment();
         }
-    }, step);
+    }, 20);
 }
 
 function endHold() {
     clearInterval(holdTimer);
     holdBtn.style.transform = "scale(1)";
+    holdBtn.style.background = "#111";
     progress = 0;
-    setProgress(0); // Reset wenn losgelassen
+    circle.style.strokeDashoffset = circumference; // Reset
 }
 
 function completeCommitment() {
     clearInterval(holdTimer);
-    // Success Feedback
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    
+    // Visual Success
+    holdBtn.innerHTML = '<i data-lucide="check"></i>';
     holdBtn.style.background = "white";
     holdBtn.style.color = "black";
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]); // Starkes Vibrieren
-    
-    // Daten speichern (LocalStorage vorerst)
+    circle.style.stroke = "white";
+
+    // Speichern
     localStorage.setItem('elevate_user', JSON.stringify(userData));
     
     setTimeout(() => {
-        alert("SYSTEM INITIALIZED. Welcome " + userData.name);
-        // Hier würde man zum Dashboard weiterleiten
-        // window.location.href = 'dashboard.html';
+        alert("WELCOME TO ELEVATE.");
+        // Hier Weiterleitung zum Dashboard später
     }, 500);
 }
 
-// Event Listeners für Maus und Touch
 holdBtn.addEventListener('mousedown', startHold);
 holdBtn.addEventListener('mouseup', endHold);
 holdBtn.addEventListener('mouseleave', endHold);
-
 holdBtn.addEventListener('touchstart', startHold);
 holdBtn.addEventListener('touchend', endHold);
