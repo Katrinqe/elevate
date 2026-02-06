@@ -3,8 +3,12 @@
     --card: #0A0A0A;
     --text: #FFFFFF;
     --muted: #666666;
-    --accent: #FFFFFF; /* Kann später Blau werden */
-    --border: rgba(255, 255, 255, 0.1);
+    --border: rgba(255, 255, 255, 0.15);
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -12,75 +16,113 @@ body {
     color: var(--text);
     font-family: 'Inter', -apple-system, sans-serif;
     margin: 0;
-    overflow: hidden; /* Kein Scrollen während Onboarding */
-    height: 100vh;
+    overflow: hidden;
+    height: 100dvh; /* Wichtig für Handy-Browser! */
+    width: 100vw;
 }
 
-/* 1. Video Splash */
-#splash-screen {
+/* --- 1. INTRO ANIMATION (CSS only) --- */
+#intro-screen {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 999;
+    inset: 0;
     background: black;
+    z-index: 1000;
     display: flex;
     justify-content: center;
     align-items: center;
+    animation: fadeOutIntro 1s forwards 3.5s; /* Verschwindet nach 3.5s */
+    pointer-events: none;
 }
 
-#intro-video {
+.logo-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.intro-logo {
+    width: 180px;
+    opacity: 0;
+    animation: logoReveal 2s ease-out forwards 0.5s;
+    z-index: 2;
+}
+
+.light-beam {
+    width: 0px;
+    height: 2px;
+    background: white;
+    box-shadow: 0 0 20px 2px white;
+    position: absolute;
+    top: 55%; /* Ungefähr Mitte Logo */
+    animation: beamFlash 2s ease-in-out forwards;
+}
+
+@keyframes beamFlash {
+    0% { width: 0; opacity: 0; }
+    30% { width: 200px; opacity: 1; }
+    100% { width: 300px; opacity: 0; }
+}
+
+@keyframes logoReveal {
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeOutIntro {
+    to { opacity: 0; }
+}
+
+/* --- 2. SLIDES & LAYOUT --- */
+#onboarding {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Video füllt Screen komplett */
+    position: relative;
 }
-
-/* 2. Onboarding Slides */
-.hidden { display: none; }
 
 .slide {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 30px;
-    display: flex;
+    inset: 0;
+    display: none; /* Standardmäßig aus */
     flex-direction: column;
-    justify-content: center; /* Zentriert vertikal */
+    padding: 30px;
     opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.8s ease;
+    transition: opacity 0.6s ease;
 }
 
 .slide.active {
+    display: flex; /* Nur der aktive ist sichtbar */
     opacity: 1;
-    pointer-events: all;
+    z-index: 10;
 }
 
-/* Typography & Inputs */
+/* Zentrierung fixen */
+.center-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertikal mittig */
+    align-items: center;
+    padding-bottom: 10vh; /* Schiebt alles optisch etwas nach oben */
+    text-align: center;
+}
+
+/* Typography */
 h1 {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    letter-spacing: -1px;
+    letter-spacing: -0.5px;
+    margin-bottom: 15px;
     line-height: 1.1;
-    margin-bottom: 20px;
-}
-
-p {
-    color: var(--muted);
-    font-size: 1rem;
-    line-height: 1.5;
 }
 
 label {
-    font-size: 0.75rem;
-    letter-spacing: 2px;
+    font-size: 0.8rem;
+    letter-spacing: 3px;
     color: var(--muted);
     text-transform: uppercase;
+    margin-bottom: 20px;
     display: block;
-    margin-bottom: 10px;
 }
 
 input {
@@ -88,113 +130,127 @@ input {
     border: none;
     border-bottom: 1px solid var(--border);
     width: 100%;
-    padding: 10px 0;
-    font-size: 2rem;
+    max-width: 300px;
+    padding: 15px 0;
+    font-size: 1.8rem;
     color: white;
     outline: none;
+    text-align: center;
     border-radius: 0;
-    font-weight: 600;
 }
 
 input:focus {
-    border-bottom-color: white;
+    border-color: white;
 }
 
-/* Date Picker Style Hack */
-input[type="date"] {
-    font-family: 'Inter', sans-serif;
+/* Tap Area Slide 1 */
+.bottom-area {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
 }
 
-/* Grid Select (Focus Areas) */
+.blink-text {
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    animation: blink 3s infinite;
+}
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* Slide 4 Grid */
+.top-area { margin-top: 60px; margin-bottom: 30px; text-align: center; }
+
 .grid-select {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px;
-    margin-top: 30px;
+    width: 100%;
 }
 
 .select-card {
     background: var(--card);
     border: 1px solid var(--border);
-    padding: 20px;
-    border-radius: 16px;
+    padding: 25px 15px;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
+    gap: 12px;
+    transition: 0.2s;
 }
 
 .select-card.selected {
-    background: #1a1a1a;
+    background: #151515;
     border-color: white;
-    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+    box-shadow: 0 0 15px rgba(255,255,255,0.05);
 }
 
-/* Animations */
-.fade-in { opacity: 0; animation: fadeIn 1s forwards; }
-.delay-1 { animation-delay: 0.5s; }
-.delay-2 { animation-delay: 1.5s; }
+/* Next Button & Commit */
+.next-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
 
-@keyframes fadeIn { to { opacity: 1; } }
-
-.blink { animation: blink 2s infinite; }
-@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-/* Commit Button (Hold) */
 .commit-zone {
     position: absolute;
-    bottom: 50px;
+    bottom: 60px;
     left: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
 }
 
 .hold-btn {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: var(--card);
+    background: #111;
     border: none;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 2;
-    touch-action: none; /* Wichtig für Mobile Hold */
+    touch-action: none; 
     -webkit-user-select: none;
 }
 
 .progress-ring {
     position: absolute;
-    top: -20px; /* Anpassen je nach Layout */
+    top: -20px;
     transform: rotate(-90deg);
     z-index: 1;
 }
 
 .progress-ring__circle {
-    stroke-dasharray: 326; /* Umfang des Kreises */
-    stroke-dashoffset: 326; /* Start: Leer */
-    transition: stroke-dashoffset 0.1s linear; /* Füllt sich */
+    stroke-dasharray: 326; 
+    stroke-dashoffset: 326; 
+    transition: stroke-dashoffset 0.1s linear;
 }
 
 .hold-text {
-    margin-top: 50px; /* Platz unter dem Button */
+    margin-top: 50px;
     font-size: 0.7rem;
     letter-spacing: 2px;
-    text-transform: uppercase;
+    color: var(--muted);
 }
 
-.next-btn {
-    position: absolute; 
-    bottom: 40px; 
-    right: 30px;
-    background: transparent;
-    border: 1px solid var(--border);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 20px;
-}
+/* Utility Animations */
+.fade-in { opacity: 0; animation: fadeIn 1s forwards; }
+.delay-1 { animation-delay: 0.8s; }
+.delay-2 { animation-delay: 1.8s; }
+@keyframes fadeIn { to { opacity: 1; } }
